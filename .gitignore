@@ -1,0 +1,20 @@
+# Ignore Maven build output
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Ignore IDE-specific files
+.idea/
+*.iml
+*.project
+*.classpath
+.settings/
+.vscode/
+
+# Ignore logs and temp files
+*.log
+*.tmp
+
+META-INF/
