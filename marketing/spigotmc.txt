@@ -1,0 +1,81 @@
+[CENTER][SIZE=7][B]TemperaturePlugin[/B][/SIZE]
+[SIZE=4][COLOR=#5B9BD5]Real heat. Real cold. Real physics.[/COLOR][/SIZE]
+
+[B]Stop pretending a biome name is a temperature.[/B][/CENTER]
+
+[HR]
+
+Most temperature plugins do the same thing: read the biome, pick a number, start a timer. This one models the world around the player — the air, the height, the season, the sun, the rain, the lava three blocks away, and what they are wearing.
+
+[HR]
+
+[B][SIZE=5]What makes it different[/SIZE][/B]
+
+[B]1. A real model, documented end to end.[/B]
+Heat index and wind chill are published regressions, used only inside the range they were actually fitted for. The full derivation — every constant, every correction — ships with the plugin. When a player asks "why is it so hot here?", you can answer, because you can read the maths.
+
+[B]2. Heat and cold come from the world, not from a list of biome names.[/B]
+Lava, fire, lit furnaces and campfires warm the air around a player. Ice and snow cool it. The effect falls off with distance and reaches exactly zero at the edge of its reach, so standing next to a source matters and standing ten blocks away does not. A furnace only counts while it is burning; a campfire only while it is lit.
+
+[B]3. The world around the player keeps changing.[/B]
+Climb a mountain and it gets colder. Summer and winter blend into each other instead of snapping over on the first day of a new season. Humidity rises and falls through the day. Rain scrubs heat out of hot air, and wind makes cold bite harder.
+
+[B]4. The body adapts — at a physical rate.[/B]
+A player drifts toward what the air feels like rather than snapping to it, over one configurable time constant. That rate is a physical setting, so changing the plugin's tick cadence can never quietly change how fast your players adapt.
+
+[B]5. It explains itself.[/B]
+[PLAIN]/temperature debug[/PLAIN] prints every contribution to a player's reading: the biome baseline, the season, each nearby heat source, their armour, the weather. No more guessing whether a config change did anything.
+
+[HR]
+
+[B][SIZE=5]Features[/SIZE][/B]
+[LIST]
+[*][B]Seven climate families[/B] cover every vanilla biome, with a fallback classifier for biome packs, and per-biome overrides by name.
+[*][B]Heat and cold have consequences.[/B] Cross the line and a player catches fire or starts freezing. Fire protection and a full set of leather armour protect them — as they should.
+[*][B]Insulation, water and drinking.[/B] Leather insulates. Standing in water cools. A drink of water cools along a curve that peaks a few minutes later and fades out.
+[*][B]Per-player display.[/B] Eight temperature units, and a toggle each player controls. Remembered per player, stored on the player — no database.
+[*][B]A fully documented config[/B] with a validated [PLAIN]config-version[/PLAIN], and a reload that preserves every player's temperature instead of resetting the server.
+[*][B]No dependencies.[/B] The jar bundles nothing but its own simulation core.
+[*][B]PlaceholderAPI support[/B], plus a developer event API with two cancellable events.
+[*][B]Paper 26.2, Java 25.[/B]
+[/LIST]
+
+[B][SIZE=5]The interface[/SIZE][/B]
+
+A clean action bar, entirely yours to shape:
+[PLAIN]action-bar: '&7[{BAR}&7] {TEMP} &7{SEASON}'[/PLAIN]
+[PLAIN]{BAR}[/PLAIN] fills against a fixed physical range, so its fill means the same thing in every biome. [PLAIN]{TEMP}[/PLAIN] is coloured by how extreme the reading is. [PLAIN]{SEASON}[/PLAIN] is the current season.
+
+[PLAIN]/temperature status[/PLAIN] gives the full picture: what the player feels, the air temperature behind it, the humidity, the wind, the biome and the season.
+
+[B][SIZE=5]Commands[/SIZE][/B]
+[LIST]
+[*][PLAIN]/temperature help[/PLAIN] — list the commands you can use.
+[*][PLAIN]/temperature status[/PLAIN] — your reading and the environment behind it.
+[*][PLAIN]/temperature toggle[/PLAIN] — turn your own display on or off.
+[*][PLAIN]/temperature unit <unit>[/PLAIN] — choose your unit.
+[*][PLAIN]/temperature debug[/PLAIN] — explain every contribution to your reading.
+[*][PLAIN]/temperature reload[/PLAIN] — reload the configuration.
+[/LIST]
+Aliases: [PLAIN]/temp[/PLAIN] and [PLAIN]/temperatureplugin[/PLAIN].
+
+[B][SIZE=5]Permissions[/SIZE][/B]
+[LIST]
+[*][PLAIN]temperature.*[/PLAIN] (default: op) — everything below.
+[*][PLAIN]temperature.use[/PLAIN] (default: [B]true[/B]) — be simulated at all.
+[*][PLAIN]temperature.toggle[/PLAIN] (default: [B]true[/B]) — toggle your own display.
+[*][PLAIN]temperature.unit[/PLAIN] (default: [B]true[/B]) — change your own unit.
+[*][PLAIN]temperature.reload[/PLAIN] (default: op) — reload the configuration.
+[*][PLAIN]temperature.notify[/PLAIN] (default: op) — threshold alerts.
+[/LIST]
+[PLAIN]temperature.use[/PLAIN] defaults to true, so it works out of the box — and can be granted per world if you only want temperature in one arena.
+
+[B][SIZE=5]Requirements[/SIZE][/B]
+[LIST]
+[*][B]Paper 26.2[/B] ([PLAIN]api-version[/PLAIN] 26.2) with [B]Java 25[/B].
+[*]PlaceholderAPI is optional.
+[*][B]Folia is not supported.[/B]
+[*]Ships with a 122-test automated suite, so behaviour is pinned rather than hoped for.
+[/LIST]
+
+[B]On performance:[/B] no benchmark is published, because none has been measured on your hardware. Performance profiles let you trade fidelity for cost, and only players with the permission are ever simulated.

@@ -1,0 +1,41 @@
+name: "TemperaturePlugin"
+version: "${project.version}"
+main: "top.cmarco.temperature.plugin.TemperaturePlugin"
+api-version: '26.2'
+folia-supported: false
+authors: ["CMarco"]
+description: "Environment-driven temperature simulation with a real heat-transfer model."
+website: "https://github.com/LB45440078L/TemperaturePlugin"
+softdepend: ["PlaceholderAPI"]
+
+commands:
+  temperature:
+    description: "View and manage your perceived temperature."
+    usage: "/temperature [help|status|toggle|unit|reload]"
+    aliases: [temp, temperatureplugin]
+
+permissions:
+  temperature.*:
+    description: "Grants every TemperaturePlugin permission."
+    default: op
+    children:
+      temperature.use: true
+      temperature.toggle: true
+      temperature.unit: true
+      temperature.reload: true
+      temperature.notify: true
+  temperature.use:
+    description: "Receive a perceived temperature (players without it are never simulated)."
+    default: true
+  temperature.toggle:
+    description: "Toggle the temperature display for yourself."
+    default: true
+  temperature.unit:
+    description: "Change the unit your temperature is displayed in."
+    default: true
+  temperature.reload:
+    description: "Reload the plugin configuration."
+    default: op
+  temperature.notify:
+    description: "Receive alerts when players cross heat or cold thresholds."
+    default: op

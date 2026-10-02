@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>top.cmarco</groupId>
+    <artifactId>temperature-plugin-parent</artifactId>
+    <version>3.0.0</version>
+  </parent>
+
+  <artifactId>temperature-plugin</artifactId>
+  <name>TemperaturePlugin :: Paper Adapter</name>
+  <description>
+    The Paper 26.2 adapter: configuration loading, environment sampling, scheduling, commands,
+    persistence of player preferences and the public event API. The only module allowed to
+    reference Bukkit/Paper types.
+  </description>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.papermc.paper</groupId>
+      <artifactId>paper-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>me.clip</groupId>
+      <artifactId>placeholderapi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>top.cmarco</groupId>
+      <artifactId>temperature-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>TemperaturePlugin-${project.version}</finalName>
+    <resources>
+      <!-- plugin.yml alone is filtered, so its `version:` can never drift from the POM. The rest
+           ship verbatim: filtering YAML that documents literal `$`/`%` placeholders would corrupt
+           them, and a config file an operator edits is not build output. -->
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>plugin.yml</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>plugin.yml</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <!-- Shade merges the sibling core module into the plugin jar. The core is our own code and
+           is not published to Maven Central, so plugin.yml's `libraries:` mechanism cannot fetch
+           it. Every external dependency is `provided`, so nothing else is ever bundled. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${shade.plugin.version}</version>
+        <dependencies>
+          <!-- Shade 3.6.2 bundles an ASM that predates Java 25 class files; override it rather
+               than downgrading the compiler release. -->
+          <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-commons</artifactId>
+            <version>${asm.version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>shade</goal></goals>
+            <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <artifactSet>
+                <includes>
+                  <include>top.cmarco:temperature-core</include>
+                </includes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

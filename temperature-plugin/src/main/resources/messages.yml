@@ -1,0 +1,44 @@
+# =============================================================================================
+#  TemperaturePlugin - messages
+# =============================================================================================
+#
+#  Colour codes use '&'. Every template is rendered when it is sent, so an edit here takes effect on
+#  /temperature reload without a restart.
+#
+#  Do not remove keys: a missing key is reported in the log and printed as <missing:key> so the
+#  breakage is visible rather than silent.
+# =============================================================================================
+
+# Prepended to every command message below.
+prefix: '&7[&cTemperature&7] &f'
+
+no-permission: '&cYou are missing the permission &e%permission%&c.'
+players-only: '&cOnly a player can use this command.'
+unknown-subcommand: '&cUnknown subcommand &e%subcommand%&c. Try &e/temperature help&c.'
+
+help:
+  header: '&7Temperature &8- &7commands'
+  line: '&8- &e/temperature %usage% &8- &7%description%'
+
+status:
+  no-reading: '&7No reading yet. Give the simulation a moment and try again.'
+  # %temperature% is in your own unit; the rest are physical values in Celsius.
+  line: '&7You feel %temperature% &8| &7air &f%air%C &8| &7feels like &f%apparent%C &8| &7humidity &f%humidity%% &8| &7wind &f%wind% &8| &7%biome% &8| %season%'
+
+toggle:
+  now-on: '&aTemperature display enabled.'
+  now-off: '&cTemperature display disabled.'
+
+unit:
+  current: '&7Your unit is &f%unit%&7. Available: &e%units%&7.'
+  changed: '&aDisplay unit set to &f%unit% &7(%symbol%)&a.'
+  invalid: '&cUnknown unit &e%value%&c. Available: &e%units%&c.'
+
+reload:
+  success: '&aConfiguration reloaded in &e%ms%ms&a.'
+  failed: '&cReload failed: &e%error%'
+
+debug:
+  header: '&7Contributions to your air temperature (Celsius):'
+  line: '&8- &7%name%&8: &f%value%'
+  total: '&8- &7total&8: &f%value%'

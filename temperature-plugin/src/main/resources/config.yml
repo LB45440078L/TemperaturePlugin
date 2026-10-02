@@ -1,0 +1,265 @@
+# =============================================================================================
+#  TemperaturePlugin - configuration
+# =============================================================================================
+#
+#  Everything here maps onto the simulation core's TemperatureSettings. Values are read once at
+#  startup and again on /temperature reload; a key that is missing falls back to the plugin's
+#  default and logs a warning, so an older file still loads.
+#
+#  Temperatures are always in degrees Celsius inside the model. The unit an individual player sees
+#  is their own choice, not this file's.
+#
+#  The physics behind every number below is derived in docs/physics_model.md. Read that before
+#  tuning; several of these constants are fitted to real regressions and are not free parameters.
+# =============================================================================================
+
+# Schema version. Do not lower this; raise it only when you understand the changes.
+config-version: 2
+
+# The worlds the plugin simulates. World names, not ids. A name that is not currently loaded is
+# reported at startup, which is nearly always a typo.
+worlds:
+  - 'world'
+  - 'world_nether'
+  - 'world_the_end'
+
+# ---------------------------------------------------------------------------------------------
+#  Display
+# ---------------------------------------------------------------------------------------------
+
+display:
+  # Whether the action bar is drawn at all. Players can additionally switch their own off.
+  enabled: true
+
+  # The unit a player sees before they choose one with /temperature unit.
+  # CELSIUS, FAHRENHEIT, KELVIN, RANKINE, REAUMUR, NEWTON, DELISLE, ROMER.
+  default-unit: 'CELSIUS'
+
+  # The action bar template. Tokens:
+  #   {BAR}    - a progress bar
+  #   {TEMP}   - the reading in the player's unit, coloured by how extreme it is
+  #   {SEASON} - the season's label
+  action-bar: '&7[{BAR}&7] {TEMP} &7{SEASON}'
+
+  # A String.format pattern for the number itself.
+  number-format: '%.1f'
+
+  bar:
+    # How many cells the bar has. The bar spans the full physical range of the model, -40 to 40 C.
+    length: 10
+    reached: '|'
+    unreached: '.'
+
+  colours:
+    cold: '&b'
+    temperate: '&a'
+    hot: '&c'
+
+  # The Celsius boundaries between the three colours above.
+  thresholds:
+    cold: 5.0
+    hot: 29.5
+
+  # How each season is labelled. Supports colour codes.
+  season-labels:
+    SPRING: '&aSpring'
+    SUMMER: '&eSummer'
+    AUTUMN: '&6Autumn'
+    WINTER: '&bWinter'
+
+# ---------------------------------------------------------------------------------------------
+#  Scheduling and the body's response
+# ---------------------------------------------------------------------------------------------
+
+simulation:
+  # How often a player's temperature is recomputed. LOW, MEDIUM, HIGH, EXTREME map to every 20, 10,
+  # 8 and 1 ticks. EXTREME is for testing only.
+  performance: 'HIGH'
+
+  # How long, in seconds, the body takes to close about 63% of the gap to the ambient temperature.
+  # Larger is a slower, more forgiving player. 36 s reproduces the original plugin's feel exactly;
+  # the equivalence is derived in docs/physics_model.md.
+  time-constant-seconds: 36.0
+
+  # The reading a player starts with, and the hard bounds the body can never leave.
+  initial-body-temperature: 36.0
+  min-body-temperature: -40.0
+  max-body-temperature: 60.0
+
+  # How often the world clocks are checked for a season change, and how often the action bar is
+  # redrawn. Both are in ticks.
+  season-check-interval-ticks: 1200
+  action-bar-interval-ticks: 10
+
+# ---------------------------------------------------------------------------------------------
+#  Calendar
+# ---------------------------------------------------------------------------------------------
+
+calendar:
+  ticks-per-day: 24000
+  days-per-season: 31
+  # Degrees added to the air temperature in each season. The offset blends smoothly between seasons
+  # rather than snapping on the first day.
+  season-offsets:
+    SPRING: 1.0
+    SUMMER: 5.05
+    AUTUMN: -5.5
+    WINTER: -12.5
+
+# ---------------------------------------------------------------------------------------------
+#  Vertical profile
+# ---------------------------------------------------------------------------------------------
+
+altitude:
+  # LINEAR_LAPSE: the physical model, colder with height. LEGACY_POLYNOMIAL: the original plugin's
+  # fitted quadratic, kept so existing servers can retain their feel.
+  mode: 'LINEAR_LAPSE'
+  # For LINEAR_LAPSE: the fraction of the biome's temperature span removed from the world floor to
+  # the build limit. 0.85 means the top is 15% as warm as the ground.
+  lapse-fraction: 0.85
+  # For LEGACY_POLYNOMIAL: the coefficients of the original quadratic.
+  legacy-quadratic:
+    a: 3.981796231733E-6
+    b: -0.00322799
+    c: 0.695913
+
+# ---------------------------------------------------------------------------------------------
+#  Humidity
+# ---------------------------------------------------------------------------------------------
+
+humidity:
+  # The fraction of a day at which humidity peaks. 6500 ticks / 24000 = 0.27083.
+  peak-time-fraction: 0.2708333333333333
+  # The Gaussian width, as a fraction of a day. 4700 ticks / 24000 = 0.19583.
+  standard-deviation: 0.19583333333333333
+  # The height of the peak and the overnight floor, as fractions of the biome's humidity band.
+  amplitude: 0.9844
+  floor: 0.015
+  # Percentage points added to humidity while it is raining.
+  precipitation-bonus: 15.0
+
+# ---------------------------------------------------------------------------------------------
+#  Climate families
+# ---------------------------------------------------------------------------------------------
+#
+#  Every biome maps to one family, and the family carries the temperature and humidity band the
+#  model interpolates within. Per-biome overrides live under biome-overrides below.
+
+climate:
+  temperate:
+    temperature: { min: 5.0, max: 28.0 }
+    humidity: { min: 40.0, max: 65.0 }
+  cold:
+    temperature: { min: -35.0, max: 5.0 }
+    humidity: { min: 30.0, max: 60.0 }
+  warm:
+    temperature: { min: 20.0, max: 38.0 }
+    humidity: { min: 15.0, max: 45.0 }
+  ocean:
+    temperature: { min: 2.0, max: 18.0 }
+    humidity: { min: 60.0, max: 85.0 }
+  cold-ocean:
+    temperature: { min: -2.0, max: 8.0 }
+    humidity: { min: 45.0, max: 70.0 }
+  nether:
+    temperature: { min: 35.0, max: 60.0 }
+    humidity: { min: 2.0, max: 15.0 }
+  end:
+    temperature: { min: -10.0, max: 15.0 }
+    humidity: { min: 5.0, max: 20.0 }
+
+# Force a biome onto a family. Keys take the 'minecraft:' namespace or not. Example:
+#   biome-overrides:
+#     minecraft:mushroom_fields: TEMPERATE
+#     mydatapack:volcanic_wastes: NETHER
+biome-overrides: {}
+
+# ---------------------------------------------------------------------------------------------
+#  Nearby heat and cold sources
+# ---------------------------------------------------------------------------------------------
+
+emitters:
+  # The distance at which a source's contribution reaches exactly zero. Sources beyond it do
+  # nothing; sources nearer than it add (or subtract) logarithmically with distance.
+  influence-radius: 5.0
+  # The most sources ever summed in one reading. The nearest are kept.
+  max-applied: 10
+  scan:
+    horizontal: 3
+    vertical: 1
+
+# Degrees added when a player is under open sky. The original applied this to everyone; here it
+# requires an actual view of the sky.
+solar-gain: 4.0
+
+# ---------------------------------------------------------------------------------------------
+#  Insulation, immersion and weather
+# ---------------------------------------------------------------------------------------------
+
+insulation:
+  # Degrees added per piece of leather armour worn.
+  leather-per-piece: 2.5
+
+immersion:
+  # Standing in water cools the player.
+  enabled: true
+  cooling: 4.0
+
+weather:
+  # Rain multiplies the air temperature by this factor when it is above the threshold.
+  rain-cooling-factor: 0.725
+  rain-cooling-threshold: 27.5
+  # Wind, in km/h, used only by the wind-chill calculation.
+  wind:
+    base: 5.0
+    storm-bonus: 25.0
+    exposure-bonus: 10.0
+
+# ---------------------------------------------------------------------------------------------
+#  Apparent temperature
+# ---------------------------------------------------------------------------------------------
+#
+#  These regressions are only valid inside the ranges given. Outside them the plugin falls back to
+#  the dry-bulb air temperature, which is the honest answer. See docs/physics_model.md.
+
+apparent-temperature:
+  heat-index:
+    enabled: true
+    min-temperature: 26.7
+    # Above this the Rothfusz regression is not fitted and overshoots wildly, so it is not used.
+    max-temperature: 46.0
+  wind-chill:
+    enabled: true
+    max-temperature: 10.0
+    min-wind: 4.8
+
+# A small day/night oscillation added to the apparent temperature, proportional to the biome's
+# temperature range. 1/(2*pi) reproduces the original plugin's term.
+diurnal-ripple:
+  enabled: true
+  scale: 0.15915494309189535
+
+# ---------------------------------------------------------------------------------------------
+#  Consumption
+# ---------------------------------------------------------------------------------------------
+
+consumption:
+  water:
+    # The cooling curve: cooling(t) = peak-cooling - (factor*t - offset)^2, for t in minutes.
+    cooling-factor: 0.6
+    cooling-offset: 4.5
+    peak-cooling: 20.0
+    # How long, in minutes, a drink keeps cooling the player.
+    effect-duration-minutes: 15
+
+# ---------------------------------------------------------------------------------------------
+#  Threshold effects
+# ---------------------------------------------------------------------------------------------
+#
+#  Above heat-threshold a player catches fire unless protected; below cold-threshold they accumulate
+#  freeze ticks unless wearing leather. The protections and the effect sizes mirror vanilla and are
+#  not configurable.
+
+effects:
+  heat-threshold: 40.5
+  cold-threshold: -0.5

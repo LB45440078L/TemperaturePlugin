@@ -1,0 +1,16 @@
+# Normalise line endings in the repository and check out LF everywhere.
+#
+# There are two working copies of this project: the canonical one under WSL (where the build runs,
+# requiring JDK 25 + Maven from ~/.local/tools/env.sh) and a mirrored one under
+# C:\Users\thevi\projects on the Windows side. Without this file, a Windows checkout with
+# core.autocrlf enabled rewrites every line of every text file, and the two trees report each other's
+# files as modified forever — a permanent, meaningless diff that hides real changes.
+#
+# eol=lf keeps the working copies byte-identical; the files are plain YAML, Java and Markdown, none of
+# which require CRLF.
+* text=auto eol=lf
+
+# Build output and IDE state are never tracked.
+target/ binary
+*.jar binary
+*.class binary
