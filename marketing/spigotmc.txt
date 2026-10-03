@@ -37,7 +37,7 @@ A player drifts toward what the air feels like rather than snapping to it, over 
 [*][B]A fully documented config[/B] with a validated [PLAIN]config-version[/PLAIN], and a reload that preserves every player's temperature instead of resetting the server.
 [*][B]No dependencies.[/B] The jar bundles nothing but its own simulation core.
 [*][B]PlaceholderAPI support[/B], plus a developer event API with two cancellable events.
-[*][B]Paper 26.2, Java 25.[/B]
+[*][B]Spigot 26.2, Java 25[/B] - and the same jar runs on Paper.
 [/LIST]
 
 [B][SIZE=5]The interface[/SIZE][/B]
@@ -72,10 +72,10 @@ Aliases: [PLAIN]/temp[/PLAIN] and [PLAIN]/temperatureplugin[/PLAIN].
 
 [B][SIZE=5]Requirements[/SIZE][/B]
 [LIST]
-[*][B]Paper 26.2[/B] ([PLAIN]api-version[/PLAIN] 26.2) with [B]Java 25[/B].
+[*][B]Spigot 26.2[/B] ([PLAIN]api-version[/PLAIN] 26.2) with [B]Java 25[/B] - it also runs on Paper, which ships the same API.
 [*]PlaceholderAPI is optional.
 [*][B]Folia is not supported.[/B]
-[*]Ships with a 122-test automated suite, so behaviour is pinned rather than hoped for.
+[*]Ships with a 123-test automated suite, so behaviour is pinned rather than hoped for.
 [/LIST]
 
 [B]On performance:[/B] no benchmark is published, because none has been measured on your hardware. Performance profiles let you trade fidelity for cost, and only players with the permission are ever simulated.

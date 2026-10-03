@@ -11,8 +11,9 @@
 
   <name>TemperaturePlugin (parent)</name>
   <description>
-    A physics-based, environment-driven temperature simulation for Paper Minecraft servers.
-    The build is split into a platform-free simulation core and a Paper adapter, so the entire
+    A physics-based, environment-driven temperature simulation for Spigot Minecraft servers
+    (and Paper, which provides the same API).
+    The build is split into a platform-free simulation core and a Spigot adapter, so the entire
     heat-transfer model is unit-testable without a running server.
   </description>
 
@@ -25,12 +26,13 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <!-- Paper 26.2 requires Java 25. `release` (not source/target) also restricts the compile
+    <!-- Spigot 26.2 requires Java 25. `release` (not source/target) also restricts the compile
          classpath to that API level, so a newer-only API fails here instead of at runtime. -->
     <maven.compiler.release>25</maven.compiler.release>
 
-    <paper.api.version>26.2.build.129-stable</paper.api.version>
+    <spigot.api.version>26.2-R0.1-SNAPSHOT</spigot.api.version>
     <placeholderapi.version>2.12.3</placeholderapi.version>
+    <annotations.version>24.1.0</annotations.version>
     <junit.version>6.1.3</junit.version>
     <assertj.version>3.27.7</assertj.version>
     <mockito.version>5.24.0</mockito.version>
@@ -65,12 +67,28 @@
         <scope>test</scope>
       </dependency>
 
-      <!-- The server supplies the Paper API. `provided` keeps it off the runtime classpath and
-           out of the shaded jar, which is what makes the shipped artifact small. -->
+      <!-- The server supplies the API. `provided` keeps it off the runtime classpath and out of the
+           shaded jar, which is what makes the shipped artifact small.
+
+           SPIGOT, NOT PAPER. The API is the common denominator: everything below is written
+           against org.bukkit and the bundled net.md_5.bungee chat classes, both of which Spigot
+           and Paper provide. Nothing may reference net.kyori.adventure or any other Paper-only
+           type - Paper bundles Adventure inside its own jar and Spigot does not, so a plugin
+           compiled against Paper's API dies on a Spigot server with
+           NoClassDefFoundError: net/kyori/adventure/text/Component. -->
       <dependency>
-        <groupId>io.papermc.paper</groupId>
-        <artifactId>paper-api</artifactId>
-        <version>${paper.api.version}</version>
+        <groupId>org.spigotmc</groupId>
+        <artifactId>spigot-api</artifactId>
+        <version>${spigot.api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- spigot-api does not carry the JetBrains annotations transitively, so they are declared
+           explicitly rather than relying on whatever Paper happened to pull in. -->
+      <dependency>
+        <groupId>org.jetbrains</groupId>
+        <artifactId>annotations</artifactId>
+        <version>${annotations.version}</version>
         <scope>provided</scope>
       </dependency>
 
@@ -92,11 +110,12 @@
   </dependencyManagement>
 
   <repositories>
+    <!-- Spigot's own snapshot repository: spigot-api is published here and nowhere else. -->
     <repository>
-      <id>papermc</id>
-      <url>https://repo.papermc.io/repository/maven-public/</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+      <releases><enabled>false</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
     </repository>
     <repository>
       <id>placeholderapi</id>

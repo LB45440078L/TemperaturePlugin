@@ -1,6 +1,8 @@
 package top.cmarco.temperature.plugin.task;
 
 import java.util.OptionalDouble;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -57,8 +59,9 @@ public final class ActionBarTask extends BukkitRunnable {
                 if (body.isEmpty()) {
                     continue;
                 }
-                player.sendActionBar(renderer.render(
-                        service.unitOf(player), body.getAsDouble(), season, service.display()));
+                String text = renderer.render(
+                        service.unitOf(player), body.getAsDouble(), season, service.display());
+                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
             }
         }
     }

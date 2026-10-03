@@ -16,7 +16,7 @@
     The thermodynamic model: unit conversions, biome climate, the vertical lapse, the diurnal
     humidity cycle, the thermal emitter field, apparent-temperature (heat index / wind chill)
     estimation and the body's first-order thermal relaxation. Deliberately free of any
-    Bukkit/Paper type so the whole model is testable in plain JUnit.
+    Bukkit type so the whole model is testable in plain JUnit.
   </description>
 
   <dependencies>

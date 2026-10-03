@@ -4,8 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.EnumMap;
 import java.util.Map;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.ChatColor;
 import org.junit.jupiter.api.Test;
 import top.cmarco.temperature.core.climate.Season;
 import top.cmarco.temperature.core.unit.TemperatureUnit;
@@ -47,18 +46,28 @@ class ActionBarRendererTest {
 
     @Test
     void renderSubstitutesEveryToken() {
-        Component component = renderer.render(TemperatureUnit.CELSIUS, 21.0, Season.SUMMER, display());
-        String text = PlainTextComponentSerializer.plainText().serialize(component);
-
-        assertThat(text).contains("21.0").contains("Summer").doesNotContain("{BAR}")
-                .doesNotContain("{TEMP}").doesNotContain("{SEASON}");
+        String text = plain(renderer.render(TemperatureUnit.CELSIUS, 21.0, Season.SUMMER, display()));
+        assertThat(text).contains("21.0").contains("Summer")
+                .doesNotContain("{BAR}").doesNotContain("{TEMP}").doesNotContain("{SEASON}");
     }
 
     @Test
     void renderUsesThePlayersUnit() {
-        Component fahrenheit = renderer.render(TemperatureUnit.FAHRENHEIT, 20.0, Season.SPRING, display());
-        String text = PlainTextComponentSerializer.plainText().serialize(fahrenheit);
+        String text = plain(renderer.render(TemperatureUnit.FAHRENHEIT, 20.0, Season.SPRING, display()));
         assertThat(text).contains("68.0");
+    }
+
+    @Test
+    void renderTranslatesAmpersandCodesEverywhere() {
+        // The renderer must hand back legacy section codes, not raw '&'. A stray '&7' reaching the
+        // action bar would be displayed literally to the player.
+        String rendered = renderer.render(TemperatureUnit.CELSIUS, 21.0, Season.SUMMER, display());
+        assertThat(rendered).contains(String.valueOf(ChatColor.COLOR_CHAR));
+        assertThat(rendered).doesNotContain("&7").doesNotContain("&a").doesNotContain("&c");
+    }
+
+    private static String plain(String legacy) {
+        return ChatColor.stripColor(legacy);
     }
 
     private static int count(String haystack, char needle) {

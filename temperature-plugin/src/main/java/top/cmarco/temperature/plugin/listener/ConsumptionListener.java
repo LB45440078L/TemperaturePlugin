@@ -28,7 +28,7 @@ import top.cmarco.temperature.plugin.effect.EffectRegistry;
  * </ul>
  *
  * <p>The tagged-consumable keys replace the raw NBT tags the legacy plugin read through a bundled
- * NBT library. Paper's own persistent data container is the supported way to attach custom data to
+ * NBT library. Bukkit's own persistent data container is the supported way to attach custom data to
  * an item, needs no third-party dependency to be shaded and relocated, and survives across versions.
  * The cost is a migration: an item tagged for the old plugin must be re-tagged with the new keys.
  * The keys are:

@@ -8,7 +8,7 @@ import top.cmarco.temperature.core.climate.BiomeClimate;
  * A frozen snapshot of everything about the player's surroundings that can influence perceived
  * temperature.
  *
- * <p>This is the single seam between the platform and the simulation. The Paper adapter measures
+ * <p>This is the single seam between the platform and the simulation. The Spigot adapter measures
  * the world and fills this in; the simulation reads it and never asks the server a question. That
  * is what lets the whole model be exercised in a unit test with no server, no scheduler and no
  * world — and it is why the record is immutable: a tick's computation cannot be perturbed by a

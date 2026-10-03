@@ -430,7 +430,7 @@ of ‑14.8 °C and, with 15 km/h wind, a wind chill of **‑22.7 °C**.
 | 13 | `TemperatureDisplay.stopTask()` cancelled a task that was never assigned, leaking two tasks per reload | tasks tracked and cancelled |
 | 14 | Reload replaced the config object that existing managers had captured, so edits reached some paths and not others | one immutable configuration swapped atomically; the message service reloads in place |
 | 15 | `Performance`/unit/season lookups threw on unknown values | all fall back to defaults with a logged warning |
-| 16 | A bundled NBT library was shaded and relocated to read item tags | Paper's persistent data container; no shaded dependency |
+| 16 | A bundled NBT library was shaded and relocated to read item tags | The server's persistent data container; no shaded dependency |
 
 ---
 

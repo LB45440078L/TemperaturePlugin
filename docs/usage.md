@@ -1,6 +1,7 @@
 # TemperaturePlugin — usage guide
 
-A physics-based temperature simulation for Paper Minecraft servers. Players feel heat and cold based
+A physics-based temperature simulation for Spigot Minecraft servers (the same jar runs on Paper).
+Players feel heat and cold based
 on where they are, what the sky is doing, what they are wearing and what is burning nearby.
 
 The model behind every number is derived in [`physics_model.md`](physics_model.md).
@@ -11,8 +12,8 @@ The model behind every number is derived in [`physics_model.md`](physics_model.m
 
 | | |
 |---|---|
-| Server | Paper **26.2** (the `api-version` the plugin declares) |
-| Java | **25** or newer — this is Paper 26.2's own minimum, and the plugin is compiled to target it |
+| Server | Spigot **26.2** (the `api-version` the plugin declares). Also runs on Paper, unchanged |
+| Java | **25** or newer — this is Spigot 26.2's own minimum, and the plugin is compiled to target it |
 | Optional | [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) for the placeholders in §7 |
 
 The plugin has no runtime dependencies. Nothing is shaded except the plugin's own simulation core, so
@@ -164,7 +165,7 @@ cocoa.setItemMeta(meta);
 
 Eating it raises the player's air temperature by 8 °C for thirty seconds.
 
-> **Migrating from 1.x.** The original read raw NBT tags through a bundled NBT library. Paper's
+> **Migrating from 1.x.** The original read raw NBT tags through a bundled NBT library. The server's
 > persistent data container is the supported equivalent and needs no shaded dependency, but items
 > tagged for the old plugin must be re-tagged with the keys above. A plain drink of water needs no
 > tagging at all — the plugin recognises `minecraft:potion` with a `WATER` base on its own.
@@ -274,5 +275,5 @@ re-reads the file on every send, so there is no cache to clear.
 mvn clean package
 ```
 
-The build produces `temperature-plugin/target/TemperaturePlugin-2.0.0.jar`. Run the tests with
-`mvn test`; the suite is 122 tests across the two modules and needs no server.
+The build produces `temperature-plugin/target/TemperaturePlugin-3.0.0.jar`. Run the tests with
+`mvn test`; the suite is 123 tests across the two modules and needs no server.

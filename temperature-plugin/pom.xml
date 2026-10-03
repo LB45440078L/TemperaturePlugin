@@ -11,17 +11,22 @@
   </parent>
 
   <artifactId>temperature-plugin</artifactId>
-  <name>TemperaturePlugin :: Paper Adapter</name>
+  <name>TemperaturePlugin :: Spigot Adapter</name>
   <description>
-    The Paper 26.2 adapter: configuration loading, environment sampling, scheduling, commands,
+    The Spigot 26.2 adapter: configuration loading, environment sampling, scheduling, commands,
     persistence of player preferences and the public event API. The only module allowed to
-    reference Bukkit/Paper types.
+    reference Bukkit types. Spigot, not Paper: the same jar runs on both, because nothing here
+    touches a type that only one of them ships.
   </description>
 
   <dependencies>
     <dependency>
-      <groupId>io.papermc.paper</groupId>
-      <artifactId>paper-api</artifactId>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
     </dependency>
     <dependency>
       <groupId>me.clip</groupId>

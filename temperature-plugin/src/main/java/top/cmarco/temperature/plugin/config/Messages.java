@@ -3,8 +3,7 @@ package top.cmarco.temperature.plugin.config;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,21 +13,22 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Reads and renders {@code messages.yml}.
  *
- * <p>Two deliberate choices, both learned from the legacy plugin's reload bugs:
+ * <p>Three deliberate choices:
  *
  * <ul>
- *   <li>The configuration is held in a {@code volatile} field with an in-place {@link #reload()},
- *       so any object that captured this service keeps seeing the current file. The legacy reload
- *       built a fresh {@code StandardConfig} that the already-constructed managers never observed,
+ *   <li>The configuration is held in a {@code volatile} field with an in-place {@link #reload()}, so
+ *       any object that captured this service keeps seeing the current file. The legacy plugin's
+ *       reload built a fresh config object that the already-constructed managers never observed,
  *       which is why corrected messages appeared everywhere except the alerts being fixed.</li>
- *   <li>Colour codes are translated through Adventure's legacy serializer rather than
- *       {@code ChatColor}, which is deprecated on modern Paper, and are translated at send time so
- *       an operator's edits take effect immediately.</li>
+ *   <li>Templates render to plain {@link String}s with legacy {@code &} colour codes translated.
+ *       This deliberately avoids Adventure's {@code Component}: Paper bundles Adventure inside its
+ *       own jar and Spigot does not, so a single signature mentioning it makes the whole plugin
+ *       unloadable on a Spigot server — with a {@code NoClassDefFoundError} during plugin class
+ *       initialisation, long before the message code is reached.</li>
+ *   <li>Translation happens at send time, so an operator's edits take effect immediately.</li>
  * </ul>
  */
 public final class Messages {
-
-    private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacyAmpersand();
 
     private final Plugin plugin;
     private volatile FileConfiguration configuration;
@@ -76,27 +76,27 @@ public final class Messages {
     }
 
     /**
-     * Renders a message to a component, substituting {@code %name%} placeholders.
+     * Renders a prefixed, coloured message.
      *
      * @param key          the message key
      * @param placeholders placeholder name to replacement
-     * @return the rendered component
+     * @return the rendered text, ready to send
      */
     @NotNull
-    public Component component(@NotNull String key, @NotNull Map<String, String> placeholders) {
-        return LEGACY.deserialize(apply(prefixedRaw(key), placeholders));
+    public String render(@NotNull String key, @NotNull Map<String, String> placeholders) {
+        return colour(apply(prefixedRaw(key), placeholders));
     }
 
     /**
-     * Renders a message without the prefix.
+     * Renders a coloured message without the prefix.
      *
      * @param key          the message key
      * @param placeholders placeholder name to replacement
-     * @return the rendered component
+     * @return the rendered text, ready to send
      */
     @NotNull
-    public Component bareComponent(@NotNull String key, @NotNull Map<String, String> placeholders) {
-        return LEGACY.deserialize(apply(raw(key), placeholders));
+    public String renderBare(@NotNull String key, @NotNull Map<String, String> placeholders) {
+        return colour(apply(raw(key), placeholders));
     }
 
     /**
@@ -106,13 +106,14 @@ public final class Messages {
      * @param key          the message key
      * @param placeholders placeholder name to replacement
      */
-    public void send(@NotNull CommandSender sender, @NotNull String key, @NotNull Map<String, String> placeholders) {
-        sender.sendMessage(component(key, placeholders));
+    public void send(@NotNull CommandSender sender, @NotNull String key,
+                     @NotNull Map<String, String> placeholders) {
+        sender.sendMessage(render(key, placeholders));
     }
 
     /**
      * @param key the message key
-     * @return the key's template rendered with no placeholders
+     * @return the key's template, uncoloured and unsubstituted
      */
     @NotNull
     public String plain(@NotNull String key) {
@@ -137,6 +138,22 @@ public final class Messages {
         Map<String, String> map = new HashMap<>(1);
         map.put(name, String.valueOf(value));
         return map;
+    }
+
+    /**
+     * Translates {@code &}-prefixed colour codes.
+     *
+     * <p>Delegates to the server's own translator rather than a blanket {@code &} to {@code §}
+     * replace, so a literal ampersand survives. Note the documented exception: an {@code &} followed
+     * by a colour character <em>is</em> a code, so {@code R&D} renders as {@code R} plus a colour
+     * code. That is a property of every ampersand-colour system, not a bug here.
+     *
+     * @param text the template
+     * @return the text with colour codes translated
+     */
+    @NotNull
+    public static String colour(@NotNull String text) {
+        return ChatColor.translateAlternateColorCodes('&', text);
     }
 
     private static String apply(String template, Map<String, String> placeholders) {

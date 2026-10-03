@@ -2,7 +2,6 @@ name: "TemperaturePlugin"
 version: "${project.version}"
 main: "top.cmarco.temperature.plugin.TemperaturePlugin"
 api-version: '26.2'
-folia-supported: false
 authors: ["CMarco"]
 description: "Environment-driven temperature simulation with a real heat-transfer model."
 website: "https://github.com/LB45440078L/TemperaturePlugin"

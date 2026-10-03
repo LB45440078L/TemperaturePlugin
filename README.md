@@ -1,6 +1,7 @@
 # TemperaturePlugin
 
-A physics-based temperature simulation for **Paper 26.2**. Players feel heat and cold from where they
+A physics-based temperature simulation for **Spigot 26.2** (the same jar runs on Paper, unchanged).
+Players feel heat and cold from where they
 are standing: the biome's climate, how high they are, the season, the sun, the rain, whether they are
 in water, what is burning or frozen nearby, and what they are wearing. A player's body temperature
 drifts towards what the air feels like rather than snapping to it, and crossing a threshold sets them
@@ -19,7 +20,7 @@ testable without a server.
 | Module | Contents | Depends on |
 |---|---|---|
 | `temperature-core` | The model: units, climate bands, the vertical lapse, the humidity curve, the emitter field, the apparent-temperature regressions and the body integrator. **No Bukkit type anywhere.** | nothing |
-| `temperature-plugin` | The Paper 26.2 adapter: configuration, environment sampling, scheduling, commands, persistence, the event API. The only module that touches Bukkit. | `paper-api`, `temperature-core` |
+| `temperature-plugin` | The Spigot 26.2 adapter: configuration, environment sampling, scheduling, commands, persistence, the event API. The only module that touches Bukkit. | `spigot-api`, `temperature-core` |
 
 ```mermaid
 flowchart LR
@@ -52,10 +53,10 @@ server a question.
 
 ```bash
 mvn clean package        # produces temperature-plugin/target/TemperaturePlugin-3.0.0.jar
-mvn test                 # 122 tests, no server required
+mvn test                 # 123 tests, no server required
 ```
 
-Requires JDK 25+ and Maven 3.9+. Paper 26.2 runs on Java 25; the modules compile with
+Requires JDK 25+ and Maven 3.9+. Spigot 26.2 runs on Java 25; the modules compile with
 `--release 25`, so a newer-only API fails the build rather than at runtime.
 
 ## Corrections inherited from 1.x

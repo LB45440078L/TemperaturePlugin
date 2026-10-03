@@ -13,7 +13,7 @@ import top.cmarco.temperature.core.environment.ThermalEmitter;
 /**
  * Every tunable the simulation and the adapter read, in one immutable object.
  *
- * <p>The core never touches YAML. The Paper adapter parses {@code config.yml} into a
+ * <p>The core never touches YAML. The Spigot adapter parses {@code config.yml} into a
  * {@link Builder}, the builder validates once, and the frozen result is handed to the models. That
  * separation is what lets a unit test construct an exact world — "cold biome, high altitude,
  * raining, three leather pieces" — with no file I/O, and it makes a reload a single atomic swap
