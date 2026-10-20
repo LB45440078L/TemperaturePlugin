@@ -157,11 +157,16 @@ public final class TemperaturePlugin extends JavaPlugin {
     }
 
     private void registerPlaceholders() {
-        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) {
+        // The wiki's recommended check: isPluginEnabled handles a present-but-disabled
+        // PlaceholderAPI, where getPlugin(...) != null would let us register into a dead hook.
+        if (!getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             return;
         }
         if (new TemperaturePlaceholderExpansion(this).register()) {
-            getLogger().info("Registered the PlaceholderAPI expansion.");
+            getLogger().info("Registered the PlaceholderAPI expansion (%temperature_...%).");
+        } else {
+            getLogger().warning("PlaceholderAPI is installed but the expansion could not be "
+                    + "registered; placeholders will not resolve.");
         }
     }
 

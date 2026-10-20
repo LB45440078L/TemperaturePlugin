@@ -52,8 +52,8 @@ server a question.
 ## Building
 
 ```bash
-mvn clean package        # produces temperature-plugin/target/TemperaturePlugin-3.0.0.jar
-mvn test                 # 123 tests, no server required
+mvn clean package        # produces temperature-plugin/target/TemperaturePlugin-3.0.1.jar
+mvn test                 # 134 tests, no server required
 ```
 
 Requires JDK 25+ and Maven 3.9+. Spigot 26.2 runs on Java 25; the modules compile with

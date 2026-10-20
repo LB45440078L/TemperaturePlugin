@@ -53,7 +53,9 @@ anything.
 - **A fully documented config** with a validated `config-version`, and a reload that preserves every
   player's temperature instead of resetting the server.
 - **No dependencies.** The jar bundles nothing but its own simulation core.
-- **PlaceholderAPI support**, plus a developer event API with two cancellable events.
+- **PlaceholderAPI support** — over thirty placeholders for your scoreboard, covering the reading in
+  every scale, the air, the apparent temperature, humidity, wind, the season, the biome and the
+  player's state. Plus a developer event API with two cancellable events.
 - **Spigot 26.2, Java 25** — and the same jar runs on Paper.
 
 ## The interface
@@ -100,7 +102,7 @@ only want temperature in one arena.
 - **Spigot 26.2** (`api-version` 26.2) with **Java 25** — it also runs on Paper, which ships the same API.
 - PlaceholderAPI is optional.
 - **Folia is not supported.**
-- Ships with a 123-test automated suite, so behaviour is pinned rather than hoped for.
+- Ships with a 134-test automated suite, so behaviour is pinned rather than hoped for.
 
 **On performance:** no benchmark is published, because none has been measured on your hardware.
 Performance profiles let you trade fidelity for cost, and only players with the permission are ever

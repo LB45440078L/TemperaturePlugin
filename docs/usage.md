@@ -23,7 +23,7 @@ the jar is a few hundred kilobytes and there is nothing to relocate or conflict 
 
 ## 2. Installation
 
-1. Drop `TemperaturePlugin-3.0.0.jar` into your server's `plugins/` directory.
+1. Drop `TemperaturePlugin-3.0.1.jar` into your server's `plugins/` directory.
 2. Start the server once. `plugins/TemperaturePlugin/config.yml` and `messages.yml` are created.
 3. Edit `config.yml` (at minimum, the `worlds:` list) and run `/temperature reload`.
 
@@ -174,23 +174,97 @@ Eating it raises the player's air temperature by 8 °C for thirty seconds.
 
 ## 7. Placeholders
 
-Available when PlaceholderAPI is installed:
+The plugin registers its own expansion with PlaceholderAPI, so everything below works with no separate
+download. All of them use the identifier `temperature`, i.e. `%temperature_<name>%`.
+
+### Temperature
+
+The player's felt temperature, in whichever unit they have chosen, plus every named scale so a
+scoreboard can show a fixed one regardless of the player's preference.
 
 | Placeholder | Value |
 |---|---|
-| `%temperature_temperature%` (or `%temperature_temp%`) | The player's body temperature, in their unit. |
-| `%temperature_celsius%` | In degrees Celsius. |
-| `%temperature_fahrenheit%` | In degrees Fahrenheit. |
+| `%temperature_temperature%` | The reading in the player's own unit. |
+| `%temperature_temp%` | Alias of the above. |
+| `%temperature_temperature_int%` | The same, rounded to a whole number. |
+| `%temperature_celsius%` | In degrees Celsius. Aliases: `temperature_temperature_celsius`, `temperature_body`. |
+| `%temperature_fahrenheit%` | In degrees Fahrenheit. Alias: `temperature_temperature_fahrenheit`. |
 | `%temperature_kelvin%` | In kelvin. |
-| `%temperature_unit%` / `%temperature_symbol%` | The player's unit name / symbol. |
-| `%temperature_humidity%` | Relative humidity, percent. |
-| `%temperature_season%` | The season name. |
-| `%temperature_air%` | The air temperature. |
-| `%temperature_apparent%` | The apparent temperature. |
-| `%temperature_wind%` | Estimated wind, km/h. |
+| `%temperature_rankine%` | In degrees Rankine. |
+| `%temperature_reaumur%` | In degrees Réaumur. |
+| `%temperature_newton%` | In degrees Newton. |
+| `%temperature_delisle%` | In degrees Delisle. |
+| `%temperature_romer%` | In degrees Rømer. |
 
-Placeholders are answered from the last simulation step, so a scoreboard shows exactly the values the
-physics produced. An unsimulated player (or one without `temperature.use`) yields an empty string.
+Each of those also answers to the prefixed form, e.g. `%temperature_temperature_kelvin%`.
+
+### The environment behind the reading
+
+| Placeholder | Value |
+|---|---|
+| `%temperature_air%` | The dry-bulb air temperature, Celsius. Aliases: `air_celsius`, `air_temperature`. |
+| `%temperature_air_fahrenheit%` | The air temperature, Fahrenheit. |
+| `%temperature_apparent%` | The apparent temperature (heat index / wind chill). Aliases: `apparent_celsius`, `feels_like`. |
+| `%temperature_apparent_fahrenheit%` | The apparent temperature, Fahrenheit. |
+| `%temperature_humidity%` | Relative humidity, percent. `%temperature_humidity_int%` for a whole number. |
+| `%temperature_wind%` | Estimated wind speed, km/h. `%temperature_wind_int%` for a whole number. |
+
+### Season and location
+
+| Placeholder | Value |
+|---|---|
+| `%temperature_season%` | The season name, e.g. `SUMMER`. |
+| `%temperature_season_display%` | The season's coloured label from `config.yml`. |
+| `%temperature_biome%` | The biome id, e.g. `minecraft:desert`. |
+| `%temperature_world%` | The world name. |
+| `%temperature_simulated%` | `true` if the player's world is in `worlds:`. |
+
+### Display and state
+
+| Placeholder | Value |
+|---|---|
+| `%temperature_unit%` | The player's unit name, e.g. `CELSIUS`. |
+| `%temperature_unit_display%` | The unit's display name, e.g. `Celsius`. |
+| `%temperature_unit_symbol%` | The unit's symbol, e.g. `°C`. Alias: `symbol`. |
+| `%temperature_display_enabled%` | `true` if the player has the display switched on. |
+| `%temperature_state%` | One word: `freezing`, `cold`, `comfortable`, `hot` or `scorching`. Alias: `condition`. |
+| `%temperature_frozen%` | `true` while the player is at or below the cold threshold. |
+| `%temperature_burning%` | `true` while the player is at or above the heat threshold. Alias: `on_fire`. |
+| `%temperature_bar%` | The rendered progress bar, with colour codes. Alias: `progress_bar`. |
+| `%temperature_action_bar%` | The whole rendered action bar line, with colour codes. |
+
+### Thresholds
+
+| Placeholder | Value |
+|---|---|
+| `%temperature_heat_threshold%` | The configured temperature at which a player catches fire. |
+| `%temperature_cold_threshold%` | The configured temperature at which a player starts freezing. |
+
+### Example
+
+A sidebar that shows the reading with the season beside it:
+
+```yaml
+temperature:
+  - "&fFeels like &e%temperature_temperature%"
+  - "&7Air &f%temperature_air%&7, %temperature_humidity%%"
+  - "&7%temperature_season_display%"
+```
+
+### Notes
+
+- Values come from the **last simulation step**, so a scoreboard and the action bar always agree.
+  Nothing is recomputed per placeholder request.
+- Numbers are given to one decimal place; the `_int` variants round to a whole number.
+- `bar` and `action_bar` carry legacy section-sign colour codes, which scoreboard plugins render.
+- An **offline player**, or a player the simulation has not reached yet, yields an empty string for
+  reading-based placeholders. Placeholders that come from configuration or the calendar — the unit,
+  the thresholds, the season — still answer.
+- An **unknown name** returns `null`, which PlaceholderAPI treats as an invalid placeholder. That is
+  deliberate: it makes `%temperature_temperture%` visible as a typo instead of silently rendering as
+  nothing.
+- A player without the `temperature.use` permission is not simulated, so their reading-based
+  placeholders are empty.
 
 ---
 
@@ -275,5 +349,5 @@ re-reads the file on every send, so there is no cache to clear.
 mvn clean package
 ```
 
-The build produces `temperature-plugin/target/TemperaturePlugin-3.0.0.jar`. Run the tests with
-`mvn test`; the suite is 123 tests across the two modules and needs no server.
+The build produces `temperature-plugin/target/TemperaturePlugin-3.0.1.jar`. Run the tests with
+`mvn test`; the suite is 134 tests across the two modules and needs no server.
